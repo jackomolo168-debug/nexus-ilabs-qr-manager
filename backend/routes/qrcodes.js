@@ -2,7 +2,7 @@
 const express = require('express');
 const { body, param, validationResult } = require('express-validator');
 const { authenticateToken } = require('../middleware/auth');
-const rateLimiter = require('../middleware/rateLimiter');
+const rateLimiter = require('../middleware/raterLimiter');
 const qrService = require('../services/qrService');
 const pool = require('../config/database');
 const redis = require('../config/redis');
