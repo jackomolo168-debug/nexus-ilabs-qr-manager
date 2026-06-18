@@ -1,8 +1,5 @@
--- Run this file to create tables
-psql -U postgres -d qr_management -f schema.sql
-
--- Or copy and paste in psql
-\c qr_management;
+-- Connect to database (remove this line if already connected)
+-- \c qr_management;
 
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
@@ -48,8 +45,18 @@ CREATE INDEX IF NOT EXISTS idx_scans_qr_code_id ON scans(qr_code_id);
 CREATE INDEX IF NOT EXISTS idx_scans_scanned_at ON scans(scanned_at);
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 
--- Create admin user (password: Admin123)
-INSERT INTO users (id, name, email, password_hash, role) 
-VALUES (gen_random_uuid(), 'Admin User', 'admin@example.com', 
-'$2b$10$E76G3x6E/62vJecBirefCu.U9lpBoL0YCtEEkgNZKjCrPUCLvduVO', 'admin')
-ON CONFLICT (email) DO NOTHING;
+-- Create default admin user (password: Admin123!)
+-- First, check if admin exists, then insert if not
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM users WHERE email = 'admin@example.com') THEN
+        INSERT INTO users (id, name, email, password_hash, role) 
+        VALUES (
+            gen_random_uuid(), 
+            'Admin User', 
+            'admin@example.com', 
+            '$2b$10$OJyfXCQUzTYlW2sbM/i/eeM2ILHm2fggy0Scxihezd4g/aXEQLSsi', 
+            'admin'
+        );
+    END IF;
+END $$;
